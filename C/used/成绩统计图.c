@@ -12,7 +12,7 @@ int main()
 	printf("input the number of student ");
 	scanf("%d", &num);
 	if (num < 1 || num > NUM)
-	    printf("input error\n");
+	    printf("input error: \n");
     } while (num < 1 || num > NUM);
 
     printf("input the score\n");

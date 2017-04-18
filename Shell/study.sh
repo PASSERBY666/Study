@@ -1,8 +1,7 @@
 #!/bin/bash
-tmp=$'cat /etc/*release | grep DISTRIB'
-OS=null
-if (cat /etc/* | grep yum)
-then echo "this is apt" 
+if (ls /tmp | grep  -F ^backup)
+then
+echo 'yes'
 else
-echo "no"
+mkdir /tmp/backup/
 fi
