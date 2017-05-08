@@ -1,44 +1,41 @@
-#!/bin/bash
-
-IP=$(/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{print $2}'|tr -d "addr:")
-
-echo "updating your system..."
-apt update
-apt dist-upgrade
-echo "done!"
-
-echo "installing packages..."
-apt install ruby aria2 python python-pip git
-echo "done!"
-
-echo "installing shadowsocks..."
+#! /bin/bash
+ifconfig
+read -p "input your IP : " IP
+read -p "install shadowsocks ? (n or enter " TMP
+if [ $TMP=="" ]
+then apt install python python-pip
 pip install shadowsocks
-read -p "input your password : " PASSWD
+read -p "input your passworld : " PASSWD
 echo "{
-    \"server\":\"$IP\",
-    \"server_port\":8388,
-    \"local_address\": \"127.0.0.1\",
-    \"local_port\":1080,
-    \"password\":\"$PASSWD\",
-    \"timeout\":300,
-    \"method\":\"aes-256-cfb\"
-}
-" > /etc/ss-config.json
+	    \"server\":\"$IP\",
+	    \"server_port\":8388,
+	    \"local_address\": \"127.0.0.1\",
+	    \"local_port\":1080,
+	    \"password\":\"$PASSWD\",
+	    \"timeout\":300,
+	    \"method\":\"aes-256-cfb\"
+	}
+	" > /etc/ss-config.json
 ssserver -c /etc/ss-config.json -d start
-echo "your ss config is :"
+echo "your ss config is : "
 cat /etc/ss-config.json
-read -p "ENTER to continue"
+fi
+read -p "enter to continue "
 
-cd
-
-echo "installing webui-aria2..."
-killall apache2
-killall nginx
+read -p "use the aria2 webui ? (n or enter " TMP
+if [ $TMP=="" ]
+then apt install git aria2
 git clone https://github.com/ziahamza/webui-aria2.git
-cd webui-aria2
-nohup ruby -run -e httpd . -p 80
-read -p "input key" KEY
-read -p "input user" USER
-read -p "input passwd" PASSWD
-nohup aria2c --enable-rpc --rpc-listen-all --rpc-user=$USER --rpc-passwd=$PASSWD --rpc-secret=$key -D
-echo "done! enjoy it! :)"
+cp -rf webui-aria2/* /var/www/html/
+read -p "input user name : " USER
+read -p "input passwd : " PASSWD
+aria2c --enable-rpc --rpc-listen-all --rpc-user=$USER --rpc-passwd=$PASSWD -D
+fi
+read -p "enter to continue "
+
+read -p "install ftp ? (n or enter" TMP
+if [ $TMP=="" ]
+then apt install vsftpd
+service vsftpd start
+fi
+echo "Done ! thanks fo using !"
